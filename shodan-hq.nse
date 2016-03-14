@@ -8,7 +8,7 @@ local openssl = stdnse.silent_require "openssl"
 -- Set your Shodan API key here to avoid typing it in every time:
 local apiKey = ""
 
-author = "Glenn Wilkinson <@glennzw> (idea: Charl van der Walt <@charlvdwalt>)"
+author = "Glenn Wilkinson <@glennzw> <glenn@sensepost.com> (idea: Charl van der Walt <@charlvdwalt> <charl@sensepost.com>)"
 license = "Same as Nmap--See https://nmap.org/book/man-legal.html"
 categories = {"discovery", "safe"}
 url = "https://github.com/glennzw/shodan-hq-nse"
@@ -30,6 +30,8 @@ You can also specify a single target with a script argument:
 
 nmap --script shodan-hq.nse --script-args 'target=x.y.z.a'
 
+Contact: [glenn|charl]@sensepost.com
+Code   : https://github.com/glennzw/shodan-hq-nse
 ]]
 
 ---
