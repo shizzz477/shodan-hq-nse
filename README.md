@@ -26,6 +26,11 @@ nmap will still scan the target host normally. If you only want to look up the t
 
 `nmap --script shodan-hq.nse -sn -Pn -n <target>`
 
+You could instead specify a single target with the `target` script argument. e.g:
+
+`nmap --script shodan-hq.nse  --script-args 'apikey=<yourShodanAPIKey>,target=<hackme>'`
+
+
 ### Saving to file
 The results can be written to file with the `outfile` script argument. e.g:
 
@@ -44,4 +49,4 @@ nmap --script-help shodan-hq.nse
 ```
 
 ## Contact
-Say _Hi_ via Twitter: [@glennzw]("https://twitter.com/glennzw")
+Say _Hi_ via Twitter: [@glennzw]("https://twitter.com/glennzw") or email: [glenn@sensepost.com](glenn@sensepost.com)

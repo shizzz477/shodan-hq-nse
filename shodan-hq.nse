@@ -24,6 +24,11 @@ Example usage:
 
 nmap --script shodan-hq.nse x.y.z.0/24 -sn -Pn -n --script-args 'outfile=potato.csv,apikey=SHODANAPIKEY'
 
+
+You can also specify a single target with a script argument:
+
+nmap --script shodan-hq.nse --script-args 'target=x.y.z.a'
+
 ]]
 
 ---
@@ -36,12 +41,14 @@ nmap --script shodan-hq.nse x.y.z.0/24 -sn -Pn -n --script-args 'outfile=potato.
 --
 --@args outfile Write the results to the specified CSV file
 --@args apiKey Specify the ShodanAPI key. This can also be hardcoded in the nse file.
+--@args target Specify a single target to be scanned.
 
 -- ToDo: * Have an option to compliment non banner scans with shodan data (e.g. -sS scan, but
 --          grab service info from Shodan
 --       * Have script arg to include extra host info. e.g. Coutry/city of IP, datetime of
 --          scan, verbose port output (e.g. smb share info) 
 --       * Warn user if they haven't set -sn -Pn and -n (and will therefore actually scan the host
+--       * Accept IP ranges via the script argument 'target' parameter
 
 
 -- Begin
@@ -66,6 +73,10 @@ prerule = function ()
     if (apiKey == "") then
         print("\nError: Please specify your ShodanAPI key with --script-args='apikey=<yourkey>', or set it in the .nse file. You can get a free key from https://developer.shodan.io\n")
     end
+    if (target ~= nil) then
+        print("Scanning single host ".. target)
+        return true
+    end
 end
 
 postrule = function ()
@@ -77,13 +88,15 @@ end
 action = function(host)
     if (apiKey == "") then return nil end
 
-    local response = http.get("api.shodan.io", 443, "/shodan/host/".. host.ip .."?key=" .. apiKey)
+    if (target == nil) then target=host.ip end
+
+    local response = http.get("api.shodan.io", 443, "/shodan/host/".. target .."?key=" .. apiKey)
     if (response.status == 401) then
         return "Received 'Unauthorized' from Shodan API. Double check your API key."
     elseif (response.status == 404) then
-	return "No information for IP " .. host.ip
+	return "No information for IP " .. target
     elseif (response.status ~= 200) then
-        return "Bad response from Shodan for IP " .. host.ip .. " : " .. response.status
+        return "Bad response from Shodan for IP " .. target .. " : " .. response.status
     end
 
     local stat, resp = json.parse(response.body)
@@ -98,7 +111,7 @@ action = function(host)
 	do
 		hostnames = h .. " " .. hostnames
 	end
-	local result = "Report for " ..host.ip
+	local result = "Report for " .. target
 	if (string.len(hostnames) > 0)
  	then	
 		result = result .. " (" .. hostnames .. ")"
@@ -108,12 +121,12 @@ action = function(host)
         do
             result = result ..  ts(e.port) .. "/" .. ts(e.transport) .. "\topen" .. ts(e.service) .. "\t" .. ts(e.product) .. "\t" .. ts(e.version) .. "\n"
             if (outFile ~= nil) then
-                out = host.ip .. ", " .. ts(e.port) .. ", " .. ts(e.service) .. " " .. ts(e.product) .. "\n"
+                out = target .. ", " .. ts(e.port) .. ", " .. ts(e.service) .. " " .. ts(e.product) .. "\n"
                 io.write(out)
             end
         end
         return result
     else
-        return "Unable to query data for IP " .. host.ip
+        return "Unable to query data for IP " .. target
     end
 end
