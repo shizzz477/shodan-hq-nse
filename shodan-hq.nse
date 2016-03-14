@@ -11,6 +11,7 @@ local apiKey = ""
 author = "Glenn Wilkinson <@glennzw> (idea: Charl van der Walt <@charlvdwalt>)"
 license = "Same as Nmap--See https://nmap.org/book/man-legal.html"
 categories = {"discovery", "safe"}
+url = "https://github.com/glennzw/shodan-hq-nse"
 
 description = [[
 Queries Shodan API for given targets and produces similar output to
