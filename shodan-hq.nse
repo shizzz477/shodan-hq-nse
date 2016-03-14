@@ -48,8 +48,7 @@ nmap --script shodan-hq.nse x.y.z.0/24 -sn -Pn -n --script-args 'outfile=potato.
 local scriptApiKey = stdnse.get_script_args("apikey")
 if (scriptApiKey ~= nil) then apiKey = scriptApiKey end
 local outFile = stdnse.get_script_args("outfile")
-
-if (outFile ~= nil) then file = io.open(outFile, "w") io.output(file) io.write("IP, Port, Service\n") end
+local target = stdnse.get_script_args("target")
 
 function ts(v)
   if v == nil then return "" end
@@ -60,6 +59,10 @@ hostrule = function() return true end
 
 
 prerule = function ()
+    if (outFile ~= nil) then 
+        file = io.open(outFile, "w") io.output(file) io.write("IP, Port, Service\n")
+    end
+
     if (apiKey == "") then
         print("\nError: Please specify your ShodanAPI key with --script-args='apikey=<yourkey>', or set it in the .nse file. You can get a free key from https://developer.shodan.io\n")
     end
